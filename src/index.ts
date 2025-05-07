@@ -1,9 +1,3 @@
-import { createReactiveSystem } from "alien-signals/system";
+import { signal } from "alien-signals";
 
-export const CUSTOM = createReactiveSystem({
-  notify() {},
-  unwatched() {},
-  update() {
-    return true;
-  },
-});
+export const count = signal(0);
