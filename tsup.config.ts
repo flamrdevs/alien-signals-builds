@@ -1,10 +1,21 @@
-import { defineConfig } from "tsup";
+import { defineConfig, Options } from "tsup";
 
-export default defineConfig({
+const shared = {
   entry: ["src/index.ts"],
-  format: "esm",
   target: "esnext",
   minify: false,
-  outDir: "dist-tsup",
   clean: true,
-});
+} satisfies Options;
+
+export default defineConfig([
+  {
+    format: "esm",
+    outDir: "dist-tsup/esm",
+    ...shared,
+  },
+  {
+    format: "cjs",
+    outDir: "dist-tsup/cjs",
+    ...shared,
+  },
+]);

@@ -1,10 +1,21 @@
-import { defineConfig } from "tsdown";
+import { defineConfig, type UserConfig } from "tsdown";
 
-export default defineConfig({
+const shared = {
   entry: ["src/index.ts"],
-  format: "esm",
   target: "esnext",
   minify: false,
-  outDir: "dist-tsdown",
   clean: true,
-});
+} satisfies UserConfig;
+
+export default defineConfig([
+  {
+    format: "esm",
+    outDir: "dist-tsdown/esm",
+    ...shared,
+  },
+  {
+    format: "cjs",
+    outDir: "dist-tsdown/cjs",
+    ...shared,
+  },
+]);

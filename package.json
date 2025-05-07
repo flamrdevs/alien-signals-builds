@@ -1,10 +1,11 @@
 {
+  "type": "module",
   "scripts": {
     "build": "rslib build && tsdown && tsup && vite build"
   },
   "devDependencies": {
     "@rslib/core": "^0.6.8",
-    "alien-signals": "^2.0.3",
+    "alien-signals": "^2.0.4",
     "tsdown": "^0.11.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3",
