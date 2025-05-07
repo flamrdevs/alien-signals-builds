@@ -12,8 +12,8 @@ importers:
         specifier: ^0.6.8
         version: 0.6.8(typescript@5.8.3)
       alien-signals:
-        specifier: ^2.0.1
-        version: 2.0.1
+        specifier: link:../alien-signals
+        version: link:../alien-signals
       tsdown:
         specifier: ^0.11.1
         version: 0.11.1(typescript@5.8.3)
@@ -633,9 +633,6 @@ packages:
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
-
-  alien-signals@2.0.1:
-    resolution: {integrity: sha512-fvRLEA4BoO78crQ9otbxMfN/uCAgQsscaNLeAd7S3gzKjDJdsXuzAI1Cl3TFqFxbp4BdcyUJsH15NHjuvB/nvQ==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -1574,8 +1571,6 @@ snapshots:
     optional: true
 
   '@types/estree@1.0.7': {}
-
-  alien-signals@2.0.1: {}
 
   ansi-regex@5.0.1: {}
 

@@ -1,17 +1,19 @@
-// node_modules/.pnpm/alien-signals@2.0.1/node_modules/alien-signals/esm/index.mjs
-var ReactiveFlags = ((ReactiveFlags2) => {
-  ReactiveFlags2[ReactiveFlags2["None"] = 0] = "None";
-  ReactiveFlags2[ReactiveFlags2["Mutable"] = 1] = "Mutable";
-  ReactiveFlags2[ReactiveFlags2["Watching"] = 2] = "Watching";
-  ReactiveFlags2[ReactiveFlags2["RecursedCheck"] = 4] = "RecursedCheck";
-  ReactiveFlags2[ReactiveFlags2["Recursed"] = 8] = "Recursed";
-  ReactiveFlags2[ReactiveFlags2["Dirty"] = 16] = "Dirty";
-  ReactiveFlags2[ReactiveFlags2["Pending"] = 32] = "Pending";
-  return ReactiveFlags2;
-})(ReactiveFlags || {});
-function createReactiveSystem({ update, notify: notify2, unwatched }) {
-  return { link: link2, unlink: unlink2, propagate: propagate2, checkDirty: checkDirty2, endTracking: endTracking2, startTracking: startTracking2, shallowPropagate: shallowPropagate2 };
-  function link2(dep, sub) {
+// ../alien-signals/esm/system.mjs
+function createReactiveSystem({
+  update,
+  notify,
+  unwatched
+}) {
+  return {
+    link,
+    unlink,
+    propagate,
+    checkDirty,
+    endTracking,
+    startTracking,
+    shallowPropagate
+  };
+  function link(dep, sub) {
     const prevDep = sub.depsTail;
     if (prevDep !== void 0 && prevDep.dep === dep) {
       return;
@@ -29,7 +31,14 @@ function createReactiveSystem({ update, notify: notify2, unwatched }) {
     if (prevSub !== void 0 && prevSub.sub === sub && (!recursedCheck || isValidLink(prevSub, sub))) {
       return;
     }
-    const newLink = sub.depsTail = dep.subsTail = { dep, sub, prevDep, nextDep, prevSub, nextSub: void 0 };
+    const newLink = sub.depsTail = dep.subsTail = {
+      dep,
+      sub,
+      prevDep,
+      nextDep,
+      prevSub,
+      nextSub: void 0
+    };
     if (nextDep !== void 0) {
       nextDep.prevDep = newLink;
     }
@@ -44,12 +53,12 @@ function createReactiveSystem({ update, notify: notify2, unwatched }) {
       dep.subs = newLink;
     }
   }
-  function unlink2(link3, sub = link3.sub) {
-    const dep = link3.dep;
-    const prevDep = link3.prevDep;
-    const nextDep = link3.nextDep;
-    const nextSub = link3.nextSub;
-    const prevSub = link3.prevSub;
+  function unlink(link2, sub = link2.sub) {
+    const dep = link2.dep;
+    const prevDep = link2.prevDep;
+    const nextDep = link2.nextDep;
+    const nextSub = link2.nextSub;
+    const prevSub = link2.prevSub;
     if (nextDep !== void 0) {
       nextDep.prevDep = prevDep;
     } else {
@@ -72,11 +81,11 @@ function createReactiveSystem({ update, notify: notify2, unwatched }) {
     }
     return nextDep;
   }
-  function propagate2(link3) {
-    let next = link3.nextSub;
+  function propagate(link2) {
+    let next = link2.nextSub;
     let stack;
     top: do {
-      const sub = link3.sub;
+      const sub = link2.sub;
       let flags = sub.flags;
       if (flags & (1 | 2)) {
         if (!(flags & (4 | 8 | 16 | 32))) {
@@ -85,59 +94,59 @@ function createReactiveSystem({ update, notify: notify2, unwatched }) {
           flags = 0;
         } else if (!(flags & 4)) {
           sub.flags = flags & ~8 | 32;
-        } else if (!(flags & (16 | 32)) && isValidLink(link3, sub)) {
+        } else if (!(flags & (16 | 32)) && isValidLink(link2, sub)) {
           sub.flags = flags | 8 | 32;
           flags &= 1;
         } else {
           flags = 0;
         }
         if (flags & 2) {
-          notify2(sub);
+          notify(sub);
         }
         if (flags & 1) {
           const subSubs = sub.subs;
           if (subSubs !== void 0) {
-            link3 = subSubs;
+            link2 = subSubs;
             if (subSubs.nextSub !== void 0) {
               stack = { value: next, prev: stack };
-              next = link3.nextSub;
+              next = link2.nextSub;
             }
             continue;
           }
         }
       }
-      if ((link3 = next) !== void 0) {
-        next = link3.nextSub;
+      if ((link2 = next) !== void 0) {
+        next = link2.nextSub;
         continue;
       }
       while (stack !== void 0) {
-        link3 = stack.value;
+        link2 = stack.value;
         stack = stack.prev;
-        if (link3 !== void 0) {
-          next = link3.nextSub;
+        if (link2 !== void 0) {
+          next = link2.nextSub;
           continue top;
         }
       }
       break;
     } while (true);
   }
-  function startTracking2(sub) {
+  function startTracking(sub) {
     sub.depsTail = void 0;
     sub.flags = sub.flags & ~(8 | 16 | 32) | 4;
   }
-  function endTracking2(sub) {
+  function endTracking(sub) {
     const depsTail = sub.depsTail;
     let toRemove = depsTail !== void 0 ? depsTail.nextDep : sub.deps;
     while (toRemove !== void 0) {
-      toRemove = unlink2(toRemove, sub);
+      toRemove = unlink(toRemove, sub);
     }
     sub.flags &= ~4;
   }
-  function checkDirty2(link3, sub) {
+  function checkDirty(link2, sub) {
     let stack;
     let checkDepth = 0;
     top: do {
-      const dep = link3.dep;
+      const dep = link2.dep;
       const depFlags = dep.flags;
       let dirty = false;
       if (sub.flags & 16) {
@@ -146,21 +155,21 @@ function createReactiveSystem({ update, notify: notify2, unwatched }) {
         if (update(dep)) {
           const subs = dep.subs;
           if (subs.nextSub !== void 0) {
-            shallowPropagate2(subs);
+            shallowPropagate(subs);
           }
           dirty = true;
         }
       } else if ((depFlags & (1 | 32)) === (1 | 32)) {
-        if (link3.nextSub !== void 0 || link3.prevSub !== void 0) {
-          stack = { value: link3, prev: stack };
+        if (link2.nextSub !== void 0 || link2.prevSub !== void 0) {
+          stack = { value: link2, prev: stack };
         }
-        link3 = dep.deps;
+        link2 = dep.deps;
         sub = dep;
         ++checkDepth;
         continue;
       }
-      if (!dirty && link3.nextDep !== void 0) {
-        link3 = link3.nextDep;
+      if (!dirty && link2.nextDep !== void 0) {
+        link2 = link2.nextDep;
         continue;
       }
       while (checkDepth) {
@@ -168,25 +177,25 @@ function createReactiveSystem({ update, notify: notify2, unwatched }) {
         const firstSub = sub.subs;
         const hasMultipleSubs = firstSub.nextSub !== void 0;
         if (hasMultipleSubs) {
-          link3 = stack.value;
+          link2 = stack.value;
           stack = stack.prev;
         } else {
-          link3 = firstSub;
+          link2 = firstSub;
         }
         if (dirty) {
           if (update(sub)) {
             if (hasMultipleSubs) {
-              shallowPropagate2(firstSub);
+              shallowPropagate(firstSub);
             }
-            sub = link3.sub;
+            sub = link2.sub;
             continue;
           }
         } else {
           sub.flags &= ~32;
         }
-        sub = link3.sub;
-        if (link3.nextDep !== void 0) {
-          link3 = link3.nextDep;
+        sub = link2.sub;
+        if (link2.nextDep !== void 0) {
+          link2 = link2.nextDep;
           continue top;
         }
         dirty = false;
@@ -194,85 +203,35 @@ function createReactiveSystem({ update, notify: notify2, unwatched }) {
       return dirty;
     } while (true);
   }
-  function shallowPropagate2(link3) {
+  function shallowPropagate(link2) {
     do {
-      const sub = link3.sub;
-      const nextSub = link3.nextSub;
+      const sub = link2.sub;
+      const nextSub = link2.nextSub;
       const subFlags = sub.flags;
       if ((subFlags & (32 | 16)) === 32) {
         sub.flags = subFlags | 16;
         if (subFlags & 2) {
-          notify2(sub);
+          notify(sub);
         }
       }
-      link3 = nextSub;
-    } while (link3 !== void 0);
+      link2 = nextSub;
+    } while (link2 !== void 0);
   }
   function isValidLink(checkLink, sub) {
     const depsTail = sub.depsTail;
     if (depsTail !== void 0) {
-      let link3 = sub.deps;
+      let link2 = sub.deps;
       do {
-        if (link3 === checkLink) {
+        if (link2 === checkLink) {
           return true;
         }
-        if (link3 === depsTail) {
+        if (link2 === depsTail) {
           break;
         }
-        link3 = link3.nextDep;
-      } while (link3 !== void 0);
+        link2 = link2.nextDep;
+      } while (link2 !== void 0);
     }
     return false;
-  }
-}
-var queuedEffects = [];
-var { link, unlink, propagate, checkDirty, endTracking, startTracking, shallowPropagate } = createReactiveSystem({ update(signal2) {
-  if ("getter" in signal2) {
-    return updateComputed(signal2);
-  } else {
-    return updateSignal(signal2, signal2.value);
-  }
-}, notify, unwatched(signal2) {
-  let toRemove = signal2.deps;
-  if (toRemove !== void 0) {
-    do {
-      toRemove = unlink(toRemove, signal2);
-    } while (toRemove !== void 0);
-    signal2.flags |= 16;
-  }
-} });
-var queuedEffectsLength = 0;
-var activeSub;
-function setCurrentSub(sub) {
-  const prevSub = activeSub;
-  activeSub = sub;
-  return prevSub;
-}
-function updateComputed(c) {
-  const prevSub = setCurrentSub(c);
-  startTracking(c);
-  try {
-    const oldValue = c.value;
-    return oldValue !== (c.value = c.getter(oldValue));
-  } finally {
-    setCurrentSub(prevSub);
-    endTracking(c);
-  }
-}
-function updateSignal(s, value) {
-  s.flags = 1;
-  return s.previousValue !== (s.previousValue = value);
-}
-function notify(e) {
-  const flags = e.flags;
-  if (!(flags & 64)) {
-    e.flags = flags | 64;
-    const subs = e.subs;
-    if (subs !== void 0) {
-      notify(subs.sub);
-    } else {
-      queuedEffects[queuedEffectsLength++] = e;
-    }
   }
 }
 
